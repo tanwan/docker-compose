@@ -1,0 +1,10 @@
+version: '3.9'
+services:   
+   # nginx
+   nginx:
+      image: nginx
+      container_name: nginx
+      ports:
+         - 9090:80
+      volumes: 
+         - ~/docker-data/nginx/html:/usr/share/nginx/html:ro

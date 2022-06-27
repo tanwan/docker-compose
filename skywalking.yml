@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  # Observability Analysis Platform
+  skywalking-oap:
+    image: apache/skywalking-oap-server:8.8.1
+    container_name: skywalking-oap
+    ports:
+      # gRPC端口: agent上报数据的端口
+      - 11800:11800
+      # http端口: UI读取数据的端口
+      - 12800:12800
+    # 不加environment的话,则使用h2
+    # 需要在es启动后再启动
+    # environment:
+    #     - SW_STORAGE=elasticsearch
+    #     - SW_STORAGE_ES_CLUSTER_NODES=elasticsearch:9200
+  skywaling-ui:
+    image: apache/skywalking-ui:8.8.1
+    container_name: skywaling-ui
+    ports:
+      - 22800:8080
+    environment:
+      # 需要以http开头
+      - SW_OAP_ADDRESS=http://skywalking-oap:12800

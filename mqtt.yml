@@ -1,0 +1,13 @@
+version: '3.9'
+services:   
+   # mqtt
+   eclipse-mosquitto:
+      image: eclipse-mosquitto:2.0.14
+      container_name: eclipse-mosquitto
+      ports: 
+         - 1883:1883
+      volumes: 
+         # 需要在配置文件配置监听的端口
+         - ~/docker-data/eclipse-mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+         - ~/docker-data/eclipse-mosquitto/data:/mosquitto/data 
+         - ~/docker-data/eclipse-mosquitto/log:/mosquitto/log

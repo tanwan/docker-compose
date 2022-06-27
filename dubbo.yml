@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+   dubbo-admin:
+     image: apache/dubbo-admin:0.3.0
+     container_name: dubbo-admin
+     ports:
+         - 7070:8080
+     environment:
+       # 这边直接使用了宿主机网络,host.docker.internal表示宿主机网络
+       - dubbo.registry.address=zookeeper://host.docker.internal:2181
+       # root 123456
+       - dubbo.admin.root.password=123456
+       # guest 123456
+       - dubbo.admin.guest.password=123456 

@@ -1,0 +1,64 @@
+version: '3.9'
+services:   
+   rabbitmq:
+      image: rabbitmq:3.9.10-management-alpine
+      container_name: rabbitmq
+      ports: 
+         - 15672:15672
+         - 5672:5672
+      hostname: rabbitmqhost
+      volumes: 
+         - ~/docker-data/rabbitmq:/var/lib/rabbitmq 
+   kafka:
+     image: bitnami/kafka:3.0.0
+     container_name: kafka
+     ports:
+       - 9092:9092
+     environment:
+        #指定brokerid
+        - KAFKA_BROKER_ID=1
+        # ADVERTISED_HOST_NAME是将broker注册的zookeeper的值,生产者和消费者从zookeeper就是拿到这个值
+        # 这边设置成kafka,容器可以直接访问,而宿主机需要将kafka的映射加入到hosts
+        - KAFKA_ADVERTISED_HOST_NAME=kafka
+        - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+   kafka-manager:
+     image: kafkamanager/kafka-manager:3.0.0.4
+     container_name: kafka-manager
+     ports:
+       - 7080:9000
+     environment:
+        # 连接docker安装的kafka时,zookeeper的连接使用zookeeper:2181,不能使用127.0.0.1/localhost,因为这个地址表示的是kafka-manager所在的docker虚拟机
+        ZK_HOSTS: zookeeper:2181
+
+   rocketmq-nameserver:
+       image: apacherocketmq/rocketmq-nameserver:4.5.0-alpine
+       container_name: rocketmq-nameserver
+       ports:
+         - 9876:9876
+       volumes:
+         - ~/docker-data/rocketmq/namesrv/logs:/home/rocketmq/logs
+       command: sh mqnamesrv
+   rocketmq-broker:
+       image: apacherocketmq/rocketmq:4.5.0-alpine
+       container_name: rocketmq-broker
+       ports:
+         - 10909:10909
+         - 10911:10911
+         - 10912:10912
+       volumes:
+          - ~/docker-data/rocketmq/broker/logs:/home/rocketmq/logs
+          - ~/docker-data/rocketmq/broker/store:/home/rocketmq/store
+          - ~/docker-data/rocketmq/broker/conf/broker.conf:/home/rocketmq/rocketmq-4.5.0/conf/broker.conf
+       #这边需要指定配置文件,否则broker会在nameserver注册docker内部的ip,容器外是无法访问docker的内部ip的   
+       command: sh mqbroker -n rocketmq-nameserver:9876 -c ../conf/broker.conf
+       depends_on:
+         - rocketmq-nameserver
+   rocketmq-dashboard:
+      image:  apacherocketmq/rocketmq-dashboard:1.0.0
+      container_name: rocketmq-dashboard
+      ports:
+         - 18080:8080
+      environment:
+         - JAVA_OPTS=-Drocketmq.namesrv.addr=rocketmq-nameserver:9876
+      depends_on:
+         - rocketmq-nameserver

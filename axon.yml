@@ -1,0 +1,14 @@
+version: '3.9'
+services:   
+   axon:
+      # see https://github.com/AxonIQ/running-axon-server/blob/master/2-docker/2-docker-compose-se/docker-compose.yml
+      image: axoniq/axonserver:4.5.11-dev
+      container_name: axon
+      volumes:
+        - ~/docker-data/axon/axonserver-data:/data
+        - ~/docker-data/axon/axonserver-events:/eventdata
+        - ~/docker-data/axon/axonserver-config:/config:ro
+      ports: 
+         - 8124:8124
+         # ui端口
+         - 8024:8024

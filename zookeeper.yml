@@ -1,0 +1,10 @@
+version: '3.9'
+services:   
+   zookeeper:
+     image: zookeeper:3.7.0
+     container_name: zookeeper
+     ports:
+       - 2181:2181
+     volumes:
+         - ~/docker-data/zookeeper/data:/data
+         - ~/docker-data/zookeeper/datalog:/datalog

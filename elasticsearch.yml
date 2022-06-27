@@ -1,0 +1,35 @@
+version: '3.9'
+services:   
+   elasticsearch:
+      image: elasticsearch:7.14.2
+      container_name: elasticsearch
+      ports:
+         - 9200:9200
+         - 9300:9300
+      volumes: 
+         -  ~/docker-data/elasticsearch/data:/usr/share/elasticsearch/data
+      environment:
+         - discovery.type=single-node
+         # 关闭xpack
+         - xpack.security.enabled=false
+   kibana:
+      image: kibana:7.14.2
+      container_name: kibana
+      ports:
+         - 5601:5601
+   logstash:
+      image: logstash:7.14.2
+      container_name: logstash
+      ports:
+         - 4560:4560
+      volumes:
+         -  ~/docker-data/logstash/pipeline/:/usr/share/logstash/pipeline/
+      command: bash -c "logstash-plugin install logstash-input-beats && /usr/local/bin/docker-entrypoint"
+   filebeat:
+      image: elastic/filebeat:7.14.2
+      container_name: filebeat
+      volumes:
+         #配置文件
+         - ~/docker-data/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+         #log
+         - ~/docker-data/filebeat/log:/var/log

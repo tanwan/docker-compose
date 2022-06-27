@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  zoo1:
+    image: zookeeper:3.7.0
+    container_name: zoo1
+    hostname: zoo1
+    ports:
+      - 2181:2181
+    volumes:
+         - ~/docker-data/zookeeper-cluster/data-zoo1:/data
+         - ~/docker-data/zookeeper-cluster/datalog-zoo1:/datalog
+    environment:
+      # zookeeper的id,1到255,会写到/data/myid中
+      ZOO_MY_ID: 1
+      # zookepper集群的服务,server.id = ip:port:port;port,server.id的id就是ZOO_MY_ID的值,第一个port表示集群内机器通讯使用,第二个port表示选举leader使用,第三个port表示:对cline端提供服务
+      # 这些会写到zoo.cfg配置中
+      # 因为docker-compose创建一个bridge的网络,因此使用zoo2,zoo3可以访问到它们的网络
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo2:
+    image: zookeeper:3.7.0
+    container_name: zoo2
+    hostname: zoo2
+    ports:
+      - 2182:2181
+    volumes:
+      - ~/docker-data/zookeeper-cluster/data-zoo2:/data
+      - ~/docker-data/zookeeper-cluster/datalog-zoo2:/datalog
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
+
+  zoo3:
+    image: zookeeper:3.7.0
+    container_name: zoo3
+    hostname: zoo3
+    ports:
+      - 2183:2181
+    volumes:
+      - ~/docker-data/zookeeper-cluster/data-zoo3:/data
+      - ~/docker-data/zookeeper-cluster/datalog-zoo3:/datalog
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181

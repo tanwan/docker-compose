@@ -1,0 +1,34 @@
+version: '3.9'
+services:    
+   zipkin:
+      image: openzipkin/zipkin:2
+      container_name: zipkin
+      ports:
+         - 9411:9411    
+      #environment:
+         # # 使用es
+         # - STORAGE_TYPE=elasticsearch
+         # - ES_HOSTS=elasticsearch:9200
+         # # 索引
+         # - ES_INDEX=zipkin
+
+         # # 使用kafka
+         # - COLLECTOR_KAFKA_ENABLED=true
+         # # 逗号分隔
+         # - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+         # # topic
+         # - KAFKA_TOPIC=zipkin
+         # # group
+         # - KAFKA_GROUP_ID=zipkin
+         # - KAFKA_STREAMS=1
+
+
+         # 使用rabbitmq
+         # - COLLECTOR_RABBITMQ_ENABLED=true
+         # - RABBIT_VIRTUAL_HOST=zipkin
+         # 逗号分隔
+         # - RABBIT_ADDRESSES=rabbitmq:5672
+         # - RABBIT_USER=guest
+         # - RABBIT_PASSWORD=guest
+         # 队列名称
+         # - RABBIT_QUEUE=zipkin

@@ -1,0 +1,68 @@
+version: '3.9'
+services:   
+   mysql:
+      image: mysql
+      container_name: mysql
+      ports: 
+         - 3306:3306
+      volumes: 
+         - ~/docker-data/mysql/standlone:/var/lib/mysql
+      environment:
+         - MYSQL_ROOT_PASSWORD=123456
+      command:  --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+   postgres:
+      image: postgres
+      container_name: postgres
+      ports:
+         - 5432:5432
+      environment:
+         - POSTGRES_USER=root
+         - POSTGRES_PASSWORD=123456
+      volumes:
+         - ~/docker-data/postgres:/var/lib/postgresql/data 
+   #mysql主从复制,直接使用bitnami/mysql
+   #docker-compose -f database.yml up --detach --scale mysql-master=1 --scale mysql-slave=3 可以用来直接将从节点扩展成3个   
+   mysql-master:
+      image: bitnami/mysql
+      ports:
+         - 3307:3306
+      container_name: mysql-master   
+      volumes:
+         - ~/docker-data/mysql/mysql-master:/bitnami/mysql/data
+      environment:
+         - MYSQL_REPLICATION_MODE=master
+         #用于复制的用户和密码
+         - MYSQL_REPLICATION_USER=repl_user
+         - MYSQL_REPLICATION_PASSWORD=repl_password
+         #root的密码
+         - MYSQL_ROOT_PASSWORD=123456
+   mysql-slave:
+      image: bitnami/mysql
+      ports:
+         - 3308:3306
+      container_name: mysql-slave
+      volumes:
+         - ~/docker-data/mysql/mysql-slave:/bitnami/mysql/data
+      depends_on:
+         - mysql-master
+      environment:
+         - MYSQL_REPLICATION_MODE=slave
+         #用于复制的用户和密码
+         - MYSQL_REPLICATION_USER=repl_user
+         - MYSQL_REPLICATION_PASSWORD=repl_password
+         #master的host和端口和root密码
+         - MYSQL_MASTER_HOST=mysql-master
+         - MYSQL_MASTER_PORT_NUMBER=3306
+         - MYSQL_MASTER_ROOT_PASSWORD=123456
+         #root的密码
+         - MYSQL_ROOT_PASSWORD=123456
+   mysql5:
+      image: mysql:5.7.5
+      container_name: mysql5
+      ports: 
+         - 3306:3306
+      volumes: 
+         - ~/docker-data/mysql/mysql5:/var/lib/mysql
+      environment:
+         - MYSQL_ROOT_PASSWORD=123456
+      command:  --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password

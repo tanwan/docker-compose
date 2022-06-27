@@ -1,0 +1,21 @@
+version: '3.9'
+services:   
+    redis:
+      image: redis:6.2.6-alpine
+      container_name: redis
+      ports:
+         - 6379:6379
+      volumes:
+         - ~/docker-data/redis/data:/data
+         - ~/docker-data/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      command: redis-server /usr/local/etc/redis/redis.conf --appendonly yes
+    mongodb:
+      image: mongo:5.0.4-focal
+      container_name: mongodb
+      ports: 
+         - 27017:27017
+      volumes: 
+         - ~/docker-data/mongodb:/data/db
+      environment:
+         - MONGO_INITDB_ROOT_USERNAME=admin
+         - MONGO_INITDB_ROOT_PASSWORD=123456

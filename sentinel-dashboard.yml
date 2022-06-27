@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  #使用docker-compose -f sentinel-dashboard.yml build sentinel-dashboard 构建镜像
+  sentinel-dashboard:
+    build:
+      #设置dockerfile上下文
+      context: ./dockerfile/sentinel
+      dockerfile: Dockerfile
+    image: sentinel-dashboard:1.8.2
+    container_name: sentinel-dashboard
+    ports:
+      - 8021:8021
