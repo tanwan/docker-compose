@@ -3,10 +3,16 @@ services:
    #docker ui
    portainer:
       #基于Alpine Linux版本
-      image: portainer/portainer-ce:2.9.3-alpine
+      image: portainer/portainer-ce:2.18.1-alpine
       container_name: portainer
       restart: always
       ports: 
          - 9000:9000
       volumes: 
+         # docker使用
          - /var/run/docker.sock:/var/run/docker.sock
+         # podman使用
+         # 需要执行systemctl --user enable --now podman.socket, mac需要进入podman的虚拟机执行
+         # docker-compose不能直接使用$(id -u), 所以这边使用了环境变量USER_ID, 然后执行的时候需要添加环境变量USER_ID:export USER_ID=$(id -u) && podman-compose up -d 
+         #- /run/user/${USER_ID}/podman/podman.sock:/var/run/docker.sock
+      privileged: true
