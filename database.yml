@@ -9,7 +9,7 @@ services:
          - ~/docker-data/mysql/standlone:/var/lib/mysql
       environment:
          - MYSQL_ROOT_PASSWORD=123456
-      command:  --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+      command:  --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci 
    postgres:
       image: postgres
       container_name: postgres
